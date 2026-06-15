@@ -1,0 +1,22 @@
+PODS:
+  - ble_agent (1.0.0):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - ble_agent (from `.symlinks/plugins/ble_agent/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  ble_agent:
+    :path: ".symlinks/plugins/ble_agent/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  ble_agent: 8bce9b82f95d835c81c743267a88263b46f5a8c7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+
+PODFILE CHECKSUM: 8a1940628b81389d4af7ba4fac6ed1cc8374cca0
+
+COCOAPODS: 1.16.2

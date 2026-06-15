@@ -1,0 +1,66 @@
+plugins {
+    id "com.android.library"
+}
+
+group 'com.caitun.ble_agent'
+version '1.0-SNAPSHOT'
+
+android {
+    namespace 'com.caitun.ble_agent'
+    compileSdk 36
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 29
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        maven {
+            url "${project(':ble_agent').projectDir}/maven-repo"
+        }
+    }
+}
+
+dependencies {
+    // BleAgent SDK 依赖 - 通过本地 Maven 仓库引用
+    implementation 'com.caitun:ble-agent:1.0.0'
+    implementation 'com.caitun:jl-audio-decode:2.1.0'
+    implementation 'com.caitun:opus:1.0.0'
+
+    // OkHttp 依赖
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+    // Jackson 依赖
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+}
+
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.squareup.okhttp3:okhttp:4.12.0'
+        force 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+        force 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+        force 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+        force 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+    }
+}

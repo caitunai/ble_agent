@@ -1,0 +1,516 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.3.2 effective-5.10 (swiftlang-6.3.2.1.108 clang-2100.1.1.101)
+// swift-module-flags: -target arm64-apple-ios15.6 -enable-objc-interop -enable-library-evolution -swift-version 5 -O -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name CaitunBleAgent
+// swift-module-flags-ignorable:  -formal-cxx-interoperability-mode=off -interface-compiler-version 6.3.2
+import AVFAudio
+import AVFoundation
+import CommonCrypto
+import CoreBluetooth
+import Foundation
+import JLAudioUnitKit
+import Opus
+import Swift
+import UIKit
+import WebKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import os
+extension AVFAudio.AVAudioPCMBuffer {
+  public func getRawPCM() -> Foundation.Data?
+}
+public protocol BleDeviceListener : AnyObject {
+  func onDeviceFound(deviceId: Swift.String, deviceName: Swift.String, mac: Swift.String, rssi: Swift.Int)
+  func onConnected(deviceId: Swift.String, deviceName: Swift.String, mac: Swift.String)
+  func onDisconnected(deviceId: Swift.String, deviceName: Swift.String, mac: Swift.String)
+  func onError(error: Swift.String)
+  func onAudioModeUpdated(errorCode: Swift.Int, errorMessage: Swift.String)
+  func onAudioStreamData(audioData: Foundation.Data)
+}
+public protocol TranslationListener : AnyObject {
+  func onRecognitionResult(id: Swift.String, text: Swift.String, isFinal: Swift.Bool, isLeft: Swift.Bool)
+  func onTranslation(id: Swift.String, sourceText: Swift.String, translatedText: Swift.String, isLeft: Swift.Bool)
+  func onError(errorCode: Swift.Int, error: Swift.String)
+  func onTtsFile(id: Swift.String, filePath: Swift.String, isLeft: Swift.Bool)
+  func onConsumeTokens(tokenType: Swift.String, tokens: Swift.Int)
+}
+public class Language {
+  final public let key: Swift.String
+  final public let value: Swift.String
+  public init(key: Swift.String, value: Swift.String)
+  @objc deinit
+}
+public enum ErrorCode : Swift.Int {
+  case success
+  case invalidTimestamp
+  case invalidSignature
+  case invalidOrganization
+  case invalidUser
+  case invalidApp
+  case tokenExpired
+  case unknownError
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public enum WorkMode : Swift.Int {
+  case telephoneSubtitle
+  case callTranslation
+  case bidirectionalTranslation
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public enum StepMode : Swift.String {
+  case asr
+  case llm
+  case tts
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol InitCallback : AnyObject {
+  func onSuccess(message: Swift.String)
+  func onError(error: Swift.String)
+}
+public protocol LoginCallback : AnyObject {
+  func onSuccess(token: Swift.String, expireTime: Foundation.TimeInterval)
+  func onError(error: Swift.String)
+}
+public protocol FetchBleListCallback : AnyObject {
+  func onSuccess()
+  func onError(error: Swift.String)
+}
+public protocol WebSocketTokenCallback : AnyObject {
+  func onSuccess(token: Swift.String, expireTime: Foundation.TimeInterval, url: Swift.String, agentId: Swift.String, agentKey: Swift.String)
+  func onError(error: Swift.String)
+}
+@objc public class BleAgent : ObjectiveC.NSObject, CoreBluetooth.CBCentralManagerDelegate, CoreBluetooth.CBPeripheralDelegate, CaitunBleAgent.BleProcessCallback, CaitunBleAgent.BlePcmSender, JLAudioUnitKit.JLOpusEncoderDelegate {
+  public static let OPUS_NATIVE_LOCK: Foundation.NSLock
+  public class Builder {
+    public init(userId: Swift.String, organizationId: Swift.String, secret: Swift.String, appPackageName: Swift.String, country: Swift.String)
+    public init(context: UIKit.UIViewController, userId: Swift.String, organizationId: Swift.String, secret: Swift.String, appPackageName: Swift.String, country: Swift.String)
+    public func build() -> CaitunBleAgent.BleAgent
+    @objc deinit
+  }
+  public init(userId: Swift.String, organizationId: Swift.String, secret: Swift.String, appPackageName: Swift.String, country: Swift.String, cacheDir: Foundation.URL?)
+  public func initialize(callback: (any CaitunBleAgent.InitCallback)?)
+  public func initialize(callback: @escaping (Swift.Result<Swift.String, CaitunBleAgent.CaitunStringError>) -> Swift.Void)
+  public func release()
+  public func isInitialized() -> Swift.Bool
+  public func setBleProductsDirectory(_ jsonArrayStr: Swift.String) -> Swift.String
+  public func addDeviceListener(_ listener: any CaitunBleAgent.BleDeviceListener)
+  public func removeDeviceListener(_ listener: any CaitunBleAgent.BleDeviceListener)
+  public func addTranslationListener(_ listener: any CaitunBleAgent.TranslationListener)
+  public func removeTranslationListener(_ listener: any CaitunBleAgent.TranslationListener)
+  public func scanDevices()
+  public func stopScan()
+  public func connectDevice(deviceId: Swift.String)
+  public func disconnectDevice()
+  public func isDeviceConnected() -> Swift.Bool
+  public func startTranslation(mode: CaitunBleAgent.WorkMode, sourceLang: Swift.String, targetLang: Swift.String, stepMode: CaitunBleAgent.StepMode)
+  public func stopTranslation()
+  public func startCallRecording()
+  public func stopCallRecording()
+  public func stopRecordingAndTranslation()
+  public func setTtsCacheEnabled(enabled: Swift.Bool)
+  public func isTtsCacheEnabled() -> Swift.Bool
+  public func deleteAllTtsCacheFiles()
+  public func fetchLanguages(callback: @escaping (Swift.Result<[CaitunBleAgent.Language], CaitunBleAgent.CaitunStringError>) -> Swift.Void)
+  public func onPcmReceived(audio: AVFAudio.AVAudioPCMBuffer)
+  public func onPcmReceived(pcm: Foundation.Data)
+  @objc public func opusEncoder(_ encoder: JLAudioUnitKit.JLOpusEncoder, data: Foundation.Data?, error: (any Swift.Error)?)
+  @objc public func centralManagerDidUpdateState(_ central: CoreBluetooth.CBCentralManager)
+  @objc public func centralManager(_ central: CoreBluetooth.CBCentralManager, didDiscover peripheral: CoreBluetooth.CBPeripheral, advertisementData: [Swift.String : Any], rssi RSSI: Foundation.NSNumber)
+  @objc public func centralManager(_ central: CoreBluetooth.CBCentralManager, didConnect peripheral: CoreBluetooth.CBPeripheral)
+  @objc public func centralManager(_ central: CoreBluetooth.CBCentralManager, didDisconnectPeripheral peripheral: CoreBluetooth.CBPeripheral, error: (any Swift.Error)?)
+  @objc public func centralManager(_ central: CoreBluetooth.CBCentralManager, didFailToConnect peripheral: CoreBluetooth.CBPeripheral, error: (any Swift.Error)?)
+  @objc public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didDiscoverServices error: (any Swift.Error)?)
+  @objc public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didDiscoverCharacteristicsFor service: CoreBluetooth.CBService, error: (any Swift.Error)?)
+  @objc public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didUpdateValueFor characteristic: CoreBluetooth.CBCharacteristic, error: (any Swift.Error)?)
+  @objc public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didUpdateNotificationStateFor characteristic: CoreBluetooth.CBCharacteristic, error: (any Swift.Error)?)
+  @objc deinit
+}
+extension CaitunBleAgent.BleAgent {
+  public func writeAudio(audio: AVFAudio.AVAudioPCMBuffer)
+  public func writeStereoAudio(audio: AVFAudio.AVAudioPCMBuffer)
+  public func writeAudioWithType(audio: AVFAudio.AVAudioPCMBuffer, type: CaitunBleAgent.BleCaitunCommand)
+  public func writeStereoAudioWithType(audio: AVFAudio.AVAudioPCMBuffer, type: CaitunBleAgent.BleCaitunCommand)
+  public func onAudioStarted()
+  public func onAudioStopped()
+  public func onFTPIPReceived(ip: Swift.String)
+  public func onFTPPortReceived(port: Swift.String)
+  public func onFTPUserReceived(user: Swift.String)
+  public func onFTPPasswordReceived(password: Swift.String)
+  public func onPowerReceived(power: Swift.Int)
+  public func onRecordingStatusReceived(data: CaitunBleAgent.BleRecordingState)
+  public func onVersionReceived(version: Swift.String)
+  public func onVerifyReceived(status: Swift.Int)
+  public func onUseLogReceived(data: [CaitunBleAgent.BleUseLog])
+  public func onWifiSSIDReceived(ssid: Swift.String)
+  public func onWifiPasswordReceived(password: Swift.String)
+  public func onFilesStorageReceived(success: Swift.Bool, total: Swift.Int, remain: Swift.Int)
+  public func onFilesCountReceived(filesCount: Swift.Int)
+  public func onFilesExistsReceived(data: Swift.Int)
+  public func onWifiStarted()
+  public func onWifiStopped()
+  public func onRecordingStateUpdated(state: CaitunBleAgent.BleRecordingState)
+  public func onRecordingFileDeleted(state: CaitunBleAgent.BleRecordingState)
+  public func onFirmwareUpdate(idx: Swift.Int)
+  public func onAudioModeUpdated(data: Swift.UInt8)
+}
+public func UIDeviceCurrentIdentifierForVendor() -> Foundation.UUID?
+public func UIDeviceCurrentName() -> Swift.String
+@objc @_inheritsConvenienceInitializers open class BleBaseProcesser : ObjectiveC.NSObject, CaitunBleAgent.BleProcesser {
+  public var stream: CaitunBleAgent.CircularByteStream?
+  public var config: CaitunBleAgent.OpusDecodeConfig?
+  public var callback: (any CaitunBleAgent.BleProcessCallback)?
+  public var isAudioStarted: Swift.Bool
+  @objc override dynamic public init()
+  open func setAudioStream()
+  open func getAudioStream() -> CaitunBleAgent.CircularByteStream
+  open func setOpusDecodeConfig(config: CaitunBleAgent.OpusDecodeConfig)
+  open func setBleProcessCallback(callback: any CaitunBleAgent.BleProcessCallback)
+  open func getChannels() -> Swift.Int
+  open func getSampleRate() -> Swift.Int
+  open func getBitDepth() -> Swift.Int
+  open func closeAudioStream()
+  public func process(data: [Swift.UInt8], isRawOpus: Swift.Bool)
+  open func decodeOpus() throws
+  open func getUpgradePacketLength() -> Swift.Int
+  open func getUpgradeFillByte() -> Swift.UInt8
+  @objc deinit
+}
+public enum BleCaitunCommand : Swift.Int {
+  case batteryQuery
+  case firmwareUpdate
+  case audioDownSendNoPlay
+  case audioDownSendPlay
+  case audioDownSendAndPlay
+  case audioDownSendAndMixedPlay
+  case audioDownSendAndMixedNoPlay
+  case audioReportNoPlay
+  case audioReportAndPlay
+  case micReportNoSend
+  case micReportAndSend
+  case audioModeEnable
+  case audioModeConfirm
+  case audioModeQuery
+  case audioModeSupports
+  case audioModeDisable
+  case micReportMonoOpus
+  case micReportStereoOpus
+  case audioDownSendAndReplacePlay
+  case unknown
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers open class BleCaitunProcesser : CaitunBleAgent.BleBaseProcesser, JLAudioUnitKit.JLOpusDecoderDelegate {
+  override open func getAudioStream() -> CaitunBleAgent.CircularByteStream
+  override open func setOpusDecodeConfig(config: CaitunBleAgent.OpusDecodeConfig)
+  override open func process(data: [Swift.UInt8], isRawOpus: Swift.Bool)
+  override open func decodeOpus() throws
+  @objc public func opusDecoder(_ decoder: JLAudioUnitKit.JLOpusDecoder, data: Foundation.Data?, error: (any Swift.Error)?)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers open class BleDefaultProcesser : CaitunBleAgent.BleBaseProcesser {
+  override open func getAudioStream() -> CaitunBleAgent.CircularByteStream
+  override open func process(data: [Swift.UInt8], isRawOpus: Swift.Bool)
+  override open func decodeOpus() throws
+  @objc override dynamic public init()
+  @objc deinit
+}
+public struct BleFTPConnection {
+  public var ip: Swift.String
+  public var port: Swift.String
+  public var username: Swift.String
+  public var password: Swift.String
+  public var isConnected: Swift.Bool
+}
+public protocol BlePcmSender {
+  func onPcmReceived(audio: AVFAudio.AVAudioPCMBuffer)
+  func onPcmReceived(pcm: Foundation.Data)
+}
+public struct BleUseLog {
+  public var bcdTime: Foundation.Data?
+  public var minutes: Swift.Int?
+  public init()
+}
+public protocol BleProcessCallback {
+  func writeAudio(audio: AVFAudio.AVAudioPCMBuffer)
+  func writeAudioWithType(audio: AVFAudio.AVAudioPCMBuffer, type: CaitunBleAgent.BleCaitunCommand)
+  func writeStereoAudio(audio: AVFAudio.AVAudioPCMBuffer)
+  func writeStereoAudioWithType(audio: AVFAudio.AVAudioPCMBuffer, type: CaitunBleAgent.BleCaitunCommand)
+  func onAudioStarted()
+  func onAudioStopped()
+  func onFTPIPReceived(ip: Swift.String)
+  func onFTPPortReceived(port: Swift.String)
+  func onFTPUserReceived(user: Swift.String)
+  func onFTPPasswordReceived(password: Swift.String)
+  func onPowerReceived(power: Swift.Int)
+  func onRecordingStatusReceived(data: CaitunBleAgent.BleRecordingState)
+  func onVersionReceived(version: Swift.String)
+  func onVerifyReceived(status: Swift.Int)
+  func onUseLogReceived(data: [CaitunBleAgent.BleUseLog])
+  func onWifiSSIDReceived(ssid: Swift.String)
+  func onWifiPasswordReceived(password: Swift.String)
+  func onFilesStorageReceived(success: Swift.Bool, total: Swift.Int, remain: Swift.Int)
+  func onFilesCountReceived(filesCount: Swift.Int)
+  func onFilesExistsReceived(data: Swift.Int)
+  func onWifiStarted()
+  func onWifiStopped()
+  func onRecordingStateUpdated(state: CaitunBleAgent.BleRecordingState)
+  func onRecordingFileDeleted(state: CaitunBleAgent.BleRecordingState)
+  func onFirmwareUpdate(idx: Swift.Int)
+  func onAudioModeUpdated(data: Swift.UInt8)
+}
+public protocol BleProcesser {
+  func setAudioStream()
+  func getAudioStream() -> CaitunBleAgent.CircularByteStream
+  func setOpusDecodeConfig(config: CaitunBleAgent.OpusDecodeConfig)
+  func setBleProcessCallback(callback: any CaitunBleAgent.BleProcessCallback)
+  func process(data: [Swift.UInt8], isRawOpus: Swift.Bool)
+  func closeAudioStream()
+  func decodeOpus() throws
+  func getChannels() -> Swift.Int
+  func getSampleRate() -> Swift.Int
+  func getBitDepth() -> Swift.Int
+  func getUpgradePacketLength() -> Swift.Int
+  func getUpgradeFillByte() -> Swift.UInt8
+}
+public struct BleRecordingState {
+  public var status: Swift.Int {
+    get
+  }
+  public var error: Swift.Int {
+    get
+  }
+  public var fileID: [Swift.UInt8]? {
+    get
+  }
+  public init()
+  public mutating func setStatus(_ statusByte: Swift.UInt8)
+  public mutating func setError(_ errorByte: Swift.UInt8)
+  public mutating func setFileID(_ fileID: [Swift.UInt8]?)
+  public func getStatus() -> Swift.Int
+  public func getError() -> Swift.Int
+  public func getFileID() -> [Swift.UInt8]?
+}
+public struct BleWifiConnection {
+  public var SSID: Swift.String
+  public var password: Swift.String
+  public var isOnline: Swift.Bool
+}
+public struct CaitunStringError : Swift.Error, Swift.CustomStringConvertible {
+  public let message: Swift.String
+  public init(message: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+}
+public enum CircularByteStreamError : Swift.Error {
+  case streamClosed
+  case bufferFull
+  case interrupted
+  public static func == (a: CaitunBleAgent.CircularByteStreamError, b: CaitunBleAgent.CircularByteStreamError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public class CircularByteStream {
+  public init(capacity: Swift.Int)
+  public var inputStream: Foundation.InputStream {
+    get
+  }
+  public var outputStream: Foundation.OutputStream {
+    get
+  }
+  public func tryWrite(_ data: [Swift.UInt8], offset: Swift.Int = 0, length: Swift.Int) -> Swift.Bool
+  public func tryRead(_ buf: inout [Swift.UInt8], offset: Swift.Int = 0, length: Swift.Int) -> Swift.Int
+  public func blockingRead(_ buf: inout [Swift.UInt8], offset: Swift.Int = 0, length: Swift.Int) throws -> Swift.Int
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class OpusCodec {
+  public enum Application : Swift.Int {
+    case voip
+    case audio
+    case restrictedLowDelay
+    public init?(rawValue: Swift.Int)
+    public typealias RawValue = Swift.Int
+    public var rawValue: Swift.Int {
+      get
+    }
+  }
+  public enum Error : Swift.Error, Swift.RawRepresentable {
+    case invalidArgument
+    case bufferTooSmall
+    case internalError
+    case invalidPacket
+    case unimplemented
+    case invalidState
+    case allocFail
+    case unknown(Swift.Int32)
+    public typealias RawValue = Swift.Int32
+    public var rawValue: Swift.Int32 {
+      get
+    }
+    public init?(rawValue: Swift.Int32)
+  }
+  public enum SampleRate : Swift.Int32 {
+    case rate8k
+    case rate12k
+    case rate16k
+    case rate24k
+    case rate48k
+    public init?(rawValue: Swift.Int32)
+    public typealias RawValue = Swift.Int32
+    public var rawValue: Swift.Int32 {
+      get
+    }
+  }
+  public enum FrameSize : Swift.Int {
+    case frames2_5ms
+    case frames5ms
+    case frames10ms
+    case frames20ms
+    case frames40ms
+    case frames60ms
+    public func samples(for sampleRate: CaitunBleAgent.OpusCodec.SampleRate) -> Swift.Int
+    public init?(rawValue: Swift.Int)
+    public typealias RawValue = Swift.Int
+    public var rawValue: Swift.Int {
+      get
+    }
+  }
+  final public class Encoder {
+    public init(sampleRate: CaitunBleAgent.OpusCodec.SampleRate, channels: Swift.Int = 1, application: CaitunBleAgent.OpusCodec.Application = .voip) throws
+    @objc deinit
+    final public func encode(pcm: [Swift.Int16], frameSize: CaitunBleAgent.OpusCodec.FrameSize) throws -> Foundation.Data
+    final public func setBitrate(_ bitrate: Swift.Int) throws
+    final public func setComplexity(_ complexity: Swift.Int) throws
+  }
+  final public class Decoder {
+    public init(sampleRate: CaitunBleAgent.OpusCodec.SampleRate, channels: Swift.Int = 1) throws
+    @objc deinit
+    final public func decode(packet: Foundation.Data, frameSize: CaitunBleAgent.OpusCodec.FrameSize) throws -> [Swift.Int16]
+    final public func decodePLC(frameSize: CaitunBleAgent.OpusCodec.FrameSize) throws -> [Swift.Int16]
+  }
+  @objc deinit
+}
+public enum SampleRate : Swift.Int {
+  case _8000
+  case _12000
+  case _16000
+  case _24000
+  case _48000
+  public init(intValue: Swift.Int)
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public enum Channels {
+  case mono
+  case stereo
+  public var audioFormatChannelConstant: Swift.Int {
+    get
+  }
+  public init(channelsCount: Swift.Int)
+  public static func == (a: CaitunBleAgent.Channels, b: CaitunBleAgent.Channels) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct OpusDecodeConfig {
+  public var frames: [CaitunBleAgent.OpusDecodeFrameConfig]?
+  public var bitDepth: Swift.Int
+  public init()
+  public var sampleRate: CaitunBleAgent.SampleRate {
+    get
+    set
+  }
+  public mutating func setSampleRate(intValue: Swift.Int)
+  public var channels: CaitunBleAgent.Channels {
+    get
+    set
+  }
+  public mutating func setChannels(channelsCount: Swift.Int)
+  public func getFrames() -> [CaitunBleAgent.OpusDecodeFrameConfig]?
+  public mutating func setFrameConfigs(_ frames: [CaitunBleAgent.OpusDecodeFrameConfig]?)
+  public func getRate() -> Swift.Int
+  public func getChannel() -> Swift.Int
+  public func getBitDepth() -> Swift.Int
+  public mutating func setBitDepth(_ bitDepth: Swift.Int)
+}
+public enum FrameSize : Swift.Int {
+  case _120
+  case _160
+  case _240
+  case _320
+  case _480
+  case _640
+  case _960
+  case _1280
+  case _1920
+  case _2560
+  case _2880
+  public init?(intValue: Swift.Int)
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public struct OpusDecodeFrameConfig {
+  public var bytes: Swift.Int
+  public var frameSize: CaitunBleAgent.FrameSize
+  public mutating func setBytesCount(bytes: Swift.Int)
+  public func getBytesCount() -> Swift.Int
+  public func getFrameSize() -> Swift.Int
+  public mutating func setFrameSize(intValue: Swift.Int)
+  public mutating func setFrameSizeWithDefault(intValue: Swift.Int)
+}
+extension CaitunBleAgent.ErrorCode : Swift.Equatable {}
+extension CaitunBleAgent.ErrorCode : Swift.Hashable {}
+extension CaitunBleAgent.ErrorCode : Swift.RawRepresentable {}
+extension CaitunBleAgent.WorkMode : Swift.Equatable {}
+extension CaitunBleAgent.WorkMode : Swift.Hashable {}
+extension CaitunBleAgent.WorkMode : Swift.RawRepresentable {}
+extension CaitunBleAgent.StepMode : Swift.Equatable {}
+extension CaitunBleAgent.StepMode : Swift.Hashable {}
+extension CaitunBleAgent.StepMode : Swift.RawRepresentable {}
+extension CaitunBleAgent.BleCaitunCommand : Swift.Equatable {}
+extension CaitunBleAgent.BleCaitunCommand : Swift.Hashable {}
+extension CaitunBleAgent.BleCaitunCommand : Swift.RawRepresentable {}
+extension CaitunBleAgent.CircularByteStreamError : Swift.Equatable {}
+extension CaitunBleAgent.CircularByteStreamError : Swift.Hashable {}
+extension CaitunBleAgent.OpusCodec.Application : Swift.Equatable {}
+extension CaitunBleAgent.OpusCodec.Application : Swift.Hashable {}
+extension CaitunBleAgent.OpusCodec.Application : Swift.RawRepresentable {}
+extension CaitunBleAgent.OpusCodec.SampleRate : Swift.Equatable {}
+extension CaitunBleAgent.OpusCodec.SampleRate : Swift.Hashable {}
+extension CaitunBleAgent.OpusCodec.SampleRate : Swift.RawRepresentable {}
+extension CaitunBleAgent.OpusCodec.FrameSize : Swift.Equatable {}
+extension CaitunBleAgent.OpusCodec.FrameSize : Swift.Hashable {}
+extension CaitunBleAgent.OpusCodec.FrameSize : Swift.RawRepresentable {}
+extension CaitunBleAgent.SampleRate : Swift.Equatable {}
+extension CaitunBleAgent.SampleRate : Swift.Hashable {}
+extension CaitunBleAgent.SampleRate : Swift.RawRepresentable {}
+extension CaitunBleAgent.Channels : Swift.Equatable {}
+extension CaitunBleAgent.Channels : Swift.Hashable {}
+extension CaitunBleAgent.FrameSize : Swift.Equatable {}
+extension CaitunBleAgent.FrameSize : Swift.Hashable {}
+extension CaitunBleAgent.FrameSize : Swift.RawRepresentable {}
