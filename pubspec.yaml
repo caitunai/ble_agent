@@ -1,6 +1,6 @@
 name: ble_agent
 description: Flutter SDK for BLE device management and translation services.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/caitunai/ble_agent
 repository: https://github.com/caitunai/ble_agent
 issue_tracker: https://github.com/caitunai/ble_agent/issues

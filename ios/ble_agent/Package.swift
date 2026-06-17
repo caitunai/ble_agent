@@ -10,19 +10,25 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "ble_agent",
+            name: "ble-agent",
             targets: ["ble_agent"]
         ),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(name: "FlutterFramework", path: "../FlutterFramework")
+    ],
     targets: [
         .target(
             name: "ble_agent",
-            dependencies: ["CaitunBleAgent"],
-            path: "Classes",
-            publicHeadersPath: nil,
-            cSettings: [
-                .headerSearchPath("Classes")
+            dependencies: [
+                .product(name: "FlutterFramework", package: "FlutterFramework"),
+                "CaitunBleAgent",
+                "JLAudioUnitKit",
+                "Opus"
+            ],
+            path: "Sources/ble_agent",
+            resources: [
+                .process("PrivacyInfo.xcprivacy")
             ],
             linkerSettings: [
                 .linkedFramework("CoreBluetooth"),
@@ -34,7 +40,14 @@ let package = Package(
         .binaryTarget(
             name: "CaitunBleAgent",
             path: "Frameworks/CaitunBleAgent.xcframework"
+        ),
+        .binaryTarget(
+            name: "JLAudioUnitKit",
+            path: "Frameworks/JLAudioUnitKit.xcframework"
+        ),
+        .binaryTarget(
+            name: "Opus",
+            path: "Frameworks/Opus.xcframework"
         )
     ]
 )
-

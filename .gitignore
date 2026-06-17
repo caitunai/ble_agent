@@ -105,3 +105,7 @@ coverage/
 secrets/
 *.pem
 *.p12
+
+# Swift Package Manager
+.build/
+.swiftpm/

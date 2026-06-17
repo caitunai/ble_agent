@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ble_agent'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = 'Flutter SDK for BLE device management and translation services.'
   s.description      = <<-DESC
 Flutter SDK for BLE device management and translation services, providing device scanning, connection, voice recognition and translation features.
@@ -13,13 +13,13 @@ Flutter SDK for BLE device management and translation services, providing device
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Caitun' => 'dev@caitun.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'ble_agent/Sources/ble_agent/**/*.swift'
   s.dependency 'Flutter'
   s.platform         = :ios, '15.6'
   
   # Privacy Manifest
   s.resource_bundles = {
-    'ble_agent_privacy' => ['PrivacyInfo.xcprivacy']
+    'ble_agent_privacy' => ['ble_agent/Sources/ble_agent/PrivacyInfo.xcprivacy']
   }
 
   # Flutter Framework does not contain a i386 slice.
@@ -35,9 +35,9 @@ Flutter SDK for BLE device management and translation services, providing device
 
   # 三个独立的 xcframework
   s.vendored_frameworks = [
-    'Frameworks/CaitunBleAgent.xcframework',
-    'Frameworks/JLAudioUnitKit.xcframework',
-    'Frameworks/Opus.xcframework'
+    'ble_agent/Frameworks/CaitunBleAgent.xcframework',
+    'ble_agent/Frameworks/JLAudioUnitKit.xcframework',
+    'ble_agent/Frameworks/Opus.xcframework'
   ]
 
   # 添加依赖的系统框架

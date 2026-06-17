@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Add Swift Package Manager (SPM) support for iOS
+
 ## 1.0.0
 
 * Initial release

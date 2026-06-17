@@ -8,7 +8,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  ble_agent: ^1.0.0
+  ble_agent: ^1.0.1
 ```
 
 ## iOS Setup
